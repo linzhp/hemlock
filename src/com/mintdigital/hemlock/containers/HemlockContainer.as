@@ -154,7 +154,7 @@ package com.mintdigital.hemlock.containers{
         }
         
         protected function onSessionCreateSuccess(event:AppEvent):void {
-            client.joinChatRoom(createRoomJID(event.options.jid.resource));
+            client.joinChatRoom(createRoomJID(event.options.from));
         }
         
         protected function onRegistrationErrors(event:AppEvent):void{
