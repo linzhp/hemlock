@@ -23,7 +23,7 @@ package com.mintdigital.hemlock.containers{
         protected var _room:String = JID.TYPE_SESSION;
         private var _client:IClient;
         private var _dispatcher:HemlockDispatcher;
-        private var _flashvars:Object;
+//        private var _flashvars:Object;
         private var _httpClient:HTTPClient;
         private var _jid:JID;
         private var _systemNotificationManager:SystemNotificationManager;
@@ -31,7 +31,7 @@ package com.mintdigital.hemlock.containers{
         
         public function HemlockContainer(options:Object = null){
             initialize();
-            _flashvars = this.loaderInfo.parameters;
+//            _flashvars = this.loaderInfo.parameters;
                _systemNotificationManager = new SystemNotificationManager(this, stage);
 
             httpClient = new HTTPClient(HemlockEnvironment.API_PATH);
@@ -289,7 +289,7 @@ package com.mintdigital.hemlock.containers{
         
         public function get domain():String             { return 'conference.' + HemlockEnvironment.SERVER; }
         
-        public function get flashvars():Object          { return _flashvars; }
+//        public function get flashvars():Object          { return _flashvars; }
         
         public function get httpClient():HTTPClient                 { return _httpClient; }
         public function set httpClient(httpClient:HTTPClient):void  { _httpClient = httpClient }
