@@ -743,8 +743,8 @@ package com.mintdigital.hemlock.clients{
             if(_keepAliveTimer)
                 _keepAliveTimer.stop();
             _keepAliveTimer = new Timer(15000);
-            _keepAliveTimer.addEventListener(TimerEvent.TIMER, onKeepAliveTimer);
-            _keepAliveTimer.start();
+//            _keepAliveTimer.addEventListener(TimerEvent.TIMER, onKeepAliveTimer);
+//            _keepAliveTimer.start();
         }
 
         private function authenticate(mechanism:String):void{
