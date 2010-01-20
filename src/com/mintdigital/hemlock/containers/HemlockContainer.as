@@ -8,12 +8,11 @@ package com.mintdigital.hemlock.containers{
     import com.mintdigital.hemlock.display.ErrorPopup;
     import com.mintdigital.hemlock.display.HemlockSprite;
     import com.mintdigital.hemlock.display.SystemNotificationManager;
-    import com.mintdigital.hemlock.strategies.MessageEventStrategy;
-    import com.mintdigital.hemlock.widgets.HemlockWidget;
-
     import com.mintdigital.hemlock.events.AppEvent;
     import com.mintdigital.hemlock.events.HemlockDispatcher;
-        
+    import com.mintdigital.hemlock.strategies.MessageEventStrategy;
+    import com.mintdigital.hemlock.widgets.HemlockWidget;
+    
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
     import flash.events.Event;
@@ -30,29 +29,29 @@ package com.mintdigital.hemlock.containers{
         private var _widgets:Object = {};
         
         public function HemlockContainer(options:Object = null){
-            initialize();
-//            _flashvars = this.loaderInfo.parameters;
-               _systemNotificationManager = new SystemNotificationManager(this, stage);
-
-            httpClient = new HTTPClient(HemlockEnvironment.API_PATH);
-            
-            client = new XMPPClient();
-            client.addEventStrategies([
-                new MessageEventStrategy()
-                // App constructors should add a strategy for each custom
-                // event that is triggered by a DataMessage payload. This
-                // array acts as a stack; earlier strategies take precedence.
-            ]);
-            
-            registerListeners();
-            startListeners();
+			include '../../../../config/environment.as';
+			if(stage)
+				initialize();
+			else
+				addEventListener(Event.ADDED_TO_STAGE,initialize);
         }
         
-        protected function initialize():void{
-            // Custom containers should override this to specify custom
-            // environments, skins, and other configurations.
-            
-            include '../../../../config/environment.as';
+        protected function initialize(e:Event=null):void{            
+			//            _flashvars = this.loaderInfo.parameters;
+			_systemNotificationManager = new SystemNotificationManager(this, stage);
+			
+			httpClient = new HTTPClient(HemlockEnvironment.API_PATH);
+			
+			client = new XMPPClient();
+			client.addEventStrategies([
+				new MessageEventStrategy()
+				// App constructors should add a strategy for each custom
+				// event that is triggered by a DataMessage payload. This
+				// array acts as a stack; earlier strategies take precedence.
+			]);
+			
+			registerListeners();
+			startListeners();
         }
         
         protected function initializeStage():void{
