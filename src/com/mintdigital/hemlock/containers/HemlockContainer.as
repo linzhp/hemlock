@@ -30,16 +30,6 @@ package com.mintdigital.hemlock.containers{
         
         public function HemlockContainer(options:Object = null){
 			include '../../../../config/environment.as';
-			if(stage)
-				initialize();
-			else
-				addEventListener(Event.ADDED_TO_STAGE,initialize);
-        }
-        
-        protected function initialize(e:Event=null):void{            
-			//            _flashvars = this.loaderInfo.parameters;
-			_systemNotificationManager = new SystemNotificationManager(this, stage);
-			
 			httpClient = new HTTPClient(HemlockEnvironment.API_PATH);
 			
 			client = new XMPPClient();
@@ -49,7 +39,6 @@ package com.mintdigital.hemlock.containers{
 				// event that is triggered by a DataMessage payload. This
 				// array acts as a stack; earlier strategies take precedence.
 			]);
-			
 			registerListeners();
 			startListeners();
         }
@@ -61,6 +50,8 @@ package com.mintdigital.hemlock.containers{
             
             stage.scaleMode = StageScaleMode.NO_SCALE;
             stage.align     = StageAlign.TOP_LEFT;
+			_systemNotificationManager = new SystemNotificationManager(this, stage);	
+			
         }
 
         

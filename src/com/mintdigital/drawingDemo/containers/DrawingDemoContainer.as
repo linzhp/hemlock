@@ -28,6 +28,7 @@ package com.mintdigital.drawingDemo.containers{
         //--------------------------------------
 
         public function DrawingDemoContainer(){
+            HemlockEnvironment.SKIN = HemlockSoftSkin;
             client.addEventStrategies([
                 new RoomEventStrategy(),
                 new DrawEventStrategy()
@@ -44,14 +45,6 @@ package com.mintdigital.drawingDemo.containers{
             if(widgets.debug){ moveChildToFront(widgets.debug); }
             setSize(width, height);
         }
-
-        override protected function initialize(e:Event=null):void{
-            HemlockEnvironment.SKIN = HemlockSoftSkin;
-            include '../../../../config/environment.as';
-        	super.initialize();
-        }
-
-
 
         //--------------------------------------
         //  Events > Initializers
