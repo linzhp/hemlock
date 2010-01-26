@@ -4,7 +4,7 @@ override public function registerListeners():void{
 
     registerListener(views.logout, MouseEvent.CLICK, onLogoutEvent);
 }
-
+ 
 private function onLogoutEvent(e:MouseEvent):void {
     Logger.debug("MenuWidget::onLogoutEvent()");
     container.logout();
