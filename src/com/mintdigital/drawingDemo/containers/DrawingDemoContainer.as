@@ -14,6 +14,7 @@ package com.mintdigital.drawingDemo.containers{
     import com.mintdigital.hemlock.widgets.drawing.DrawingWidget;
     import com.mintdigital.hemlock.widgets.roomList.RoomListWidget;
     import com.mintdigital.hemlock.widgets.signin.SigninWidget;
+    import flash.events.Event;
 
     [SWF(width="1000", height="665", backgroundColor="#CCCCCC")]
     public class DrawingDemoContainer extends HemlockContainer{
@@ -27,7 +28,6 @@ package com.mintdigital.drawingDemo.containers{
         //--------------------------------------
 
         public function DrawingDemoContainer(){
-            initialize();
             client.addEventStrategies([
                 new RoomEventStrategy(),
                 new DrawEventStrategy()
@@ -45,9 +45,10 @@ package com.mintdigital.drawingDemo.containers{
             setSize(width, height);
         }
 
-        override protected function initialize():void{
-            include '../../../../config/environment.as';
+        override protected function initialize(e:Event=null):void{
             HemlockEnvironment.SKIN = HemlockSoftSkin;
+            include '../../../../config/environment.as';
+        	super.initialize();
         }
 
 
