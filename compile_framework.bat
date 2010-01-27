@@ -1,0 +1,1 @@
+compc -namespace http://hemlock.mintdigital.com src/manifestCore.xml -include-namespaces=http://hemlock.mintdigital.com -sp=src -sp=vendor/xiff/src -managers=flash.fonts.AFEFontManager -output=bin/HemlockCore.swc
