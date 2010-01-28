@@ -29,7 +29,7 @@ package com.mintdigital.hemlock.containers{
         private var _widgets:Object = {};
         
         public function HemlockContainer(options:Object = null){
-			include '../../../../config/environment.as';
+			initialize();
 			httpClient = new HTTPClient(HemlockEnvironment.API_PATH);
 			
 			client = new XMPPClient();
@@ -42,7 +42,14 @@ package com.mintdigital.hemlock.containers{
 			registerListeners();
 			startListeners();
         }
-        
+		
+		protected function initialize():void{
+			// Custom containers should override this to specify custom
+			// environments, skins, and other configurations.
+			
+			include '../../../../config/environment.as';
+		}
+		
         protected function initializeStage():void{
             // Override this (call super.initializeStage() first) to add views
             // only after the stage is ready. This is useful when loading your

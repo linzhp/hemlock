@@ -27,25 +27,30 @@ package com.mintdigital.drawingDemo.containers{
         //  Initializers
         //--------------------------------------
 
-        public function DrawingDemoContainer(){
-            HemlockEnvironment.SKIN = HemlockSoftSkin;
-            client.addEventStrategies([
-                new RoomEventStrategy(),
-                new DrawEventStrategy()
-            ]);
-
-            // Add background to prop open
-            GraphicsUtils.fill(graphics, { width: width, height: height }, 0xCCCCCC, 1);
-
-            // Set up widgets
-            addDebugWidget();
-            addInitialWidgets();
-
-            // Wrap up
-            if(widgets.debug){ moveChildToFront(widgets.debug); }
-            setSize(width, height);
-        }
-
+		public function DrawingDemoContainer(){
+			initialize();
+			client.addEventStrategies([
+				new RoomEventStrategy(),
+				new DrawEventStrategy()
+			]);
+			
+			// Add background to prop open
+			GraphicsUtils.fill(graphics, { width: width, height: height }, 0xCCCCCC, 1);
+			
+			// Set up widgets
+			addDebugWidget();
+			addInitialWidgets();
+			
+			// Wrap up
+			if(widgets.debug){ moveChildToFront(widgets.debug); }
+			setSize(width, height);
+		}
+		
+		override protected function initialize():void{
+			include '../../../../config/environment.as';
+			HemlockEnvironment.SKIN = HemlockSoftSkin;
+		}
+		
         //--------------------------------------
         //  Events > Initializers
         //--------------------------------------
