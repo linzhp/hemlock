@@ -25,7 +25,7 @@ package com.mintdigital.hemlock.auth{
         }
         
         override public function start():void{
-            connection.send(authRequest());
+            connection.sendRawString(authRequest());
         }
 
         protected function authRequest():String{

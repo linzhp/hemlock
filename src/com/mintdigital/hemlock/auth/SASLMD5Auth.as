@@ -26,7 +26,7 @@ package com.mintdigital.hemlock.auth {
             
             connection.addEventListener(ChallengeEvent.CHALLENGE, onChallenge);
             _firstChallengeHandled = false;
-            connection.send(authRequest());
+            connection.sendRawString(authRequest());
         }
         
         
@@ -64,13 +64,13 @@ package com.mintdigital.hemlock.auth {
             Logger.debug("nonce = " + nonce);
             Logger.debug("qop = " + qop);
         
-            connection.send(responseXML(nonce));
+            connection.sendRawString(responseXML(nonce));
             _firstChallengeHandled = true;
         }
         
         private function handleSecondChallenge(evt:ChallengeEvent) : void 
         {
-            connection.send("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />")
+            connection.sendRawString("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />")
         }
         
         private function onChallenge(evt:ChallengeEvent) : void {
