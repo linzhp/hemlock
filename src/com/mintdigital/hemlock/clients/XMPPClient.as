@@ -5,7 +5,6 @@ package com.mintdigital.hemlock.clients{
     import com.mintdigital.hemlock.auth.SASLAnonymousAuth;
     import com.mintdigital.hemlock.auth.SASLAuth;
     import com.mintdigital.hemlock.auth.SASLMD5Auth;
-    import com.mintdigital.hemlock.clients.IClient;
     import com.mintdigital.hemlock.conn.XMPPConnection;
     import com.mintdigital.hemlock.data.DataMessage;
     import com.mintdigital.hemlock.data.JID;
@@ -28,27 +27,17 @@ package com.mintdigital.hemlock.clients{
     import com.mintdigital.hemlock.events.VCardEvent;
     import com.mintdigital.hemlock.utils.HashUtils;
     import com.mintdigital.hemlock.vcard.VCard;
-
-    import com.dynamicflash.util.Base64;
-
+    
     import org.jivesoftware.xiff.data.ExtensionClassRegistry;
-    import org.jivesoftware.xiff.data.forms.FormExtension;
     import org.jivesoftware.xiff.data.IQ;
     import org.jivesoftware.xiff.data.disco.ItemDiscoExtension;
+    import org.jivesoftware.xiff.data.forms.FormExtension;
+    import org.jivesoftware.xiff.data.muc.MUCAdminExtension;
     import org.jivesoftware.xiff.data.muc.MUCExtension;
-    import org.jivesoftware.xiff.data.muc.MUCAdminExtension
     import org.jivesoftware.xiff.data.muc.MUCOwnerExtension;
     import org.jivesoftware.xiff.data.muc.MUCUserExtension;
     import org.jivesoftware.xiff.data.session.SessionExtension;
     import org.jivesoftware.xiff.data.vcard.VCardExtension;
-    import org.jivesoftware.xiff.data.XMPPStanza;
-
-    import flash.events.Event;
-    import flash.events.IOErrorEvent;
-    import flash.events.TimerEvent;
-    import flash.utils.ByteArray;
-    import flash.utils.Timer;
-    import flash.xml.XMLNode;
 
     public class XMPPClient implements IClient{
 
@@ -870,6 +859,10 @@ package com.mintdigital.hemlock.clients{
         private function get timestamp():String {
             var d:Date = new Date();
             return d.getTime().toString();
+        }
+        
+        public function get connection():XMPPConnection {
+        	return _connection;
         }
         
     } 
