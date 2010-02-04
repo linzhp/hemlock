@@ -45,9 +45,7 @@ package com.mintdigital.hemlock.clients{
 
     import flash.events.Event;
     import flash.events.IOErrorEvent;
-    import flash.events.TimerEvent;
     import flash.utils.ByteArray;
-    import flash.utils.Timer;
     import flash.xml.XMLNode;
 
     public class XMPPClient implements IClient{
@@ -57,7 +55,6 @@ package com.mintdigital.hemlock.clients{
         //--------------------------------------
 
         private var _connection:XMPPConnection;
-        private var _keepAliveTimer:Timer;
         private var _lastSent:int = 0;
         private var _username:String;
         private var _password:String;
@@ -115,7 +112,6 @@ package com.mintdigital.hemlock.clients{
         public function start() : void {
             _connection.server = server;
             _connection.connect();
-            resetKeepAliveTimer();
         }
         
         public function connect():void {
@@ -156,7 +152,6 @@ package com.mintdigital.hemlock.clients{
             Logger.debug("XMPPClient::disconnect()");
             
             _auth.stop();
-            _keepAliveTimer.stop();
             _connection.disconnect();
             _loggedIn = false;
             _loggingOut = false;
@@ -507,17 +502,10 @@ package com.mintdigital.hemlock.clients{
             Logger.debug("XMPPClient::onSessionCreateFailure() " + evt.type );
             Logger.debug("login FAIL....");
             _auth.stop();
-            _keepAliveTimer.stop();
             _connection.disconnect();
             notifyApp(AppEvent.SESSION_CREATE_FAILURE);
         }
         
-        private function onKeepAliveTimer(evt:Event) : void {
-            Logger.debug("XMPPClient::onKeepAliveTimer() " );
-            _connection.sendKeepAlive();
-            resetKeepAliveTimer();
-        }
-
         private function onLoginSuccess(evt:SessionEvent) : void {
             _loggedIn = true;
             _connection.sendOpenStreamTag();
@@ -537,7 +525,6 @@ package com.mintdigital.hemlock.clients{
             Logger.debug("XMPPClient::onRegistrationErrors()");
             notifyApp(AppEvent.REGISTRATION_ERRORS);
             _registering = false;
-            _keepAliveTimer.stop();
             _connection.disconnect();
         }
 
@@ -739,14 +726,6 @@ package com.mintdigital.hemlock.clients{
         //  Internal helpers
         //--------------------------------------
         
-        private function resetKeepAliveTimer() : void {
-            if(_keepAliveTimer)
-                _keepAliveTimer.stop();
-            _keepAliveTimer = new Timer(60000);
-            _keepAliveTimer.addEventListener(TimerEvent.TIMER, onKeepAliveTimer);
-            _keepAliveTimer.start();
-        }
-
         private function authenticate(mechanism:String):void{
             // `mechanism` should be one of the SASLAuth.MECHANISM_* constants.
             

@@ -28,14 +28,17 @@ package com.mintdigital.hemlock.conn {
     import flash.events.EventDispatcher;
     import flash.events.IOErrorEvent;
     import flash.events.SecurityErrorEvent;
+    import flash.events.TimerEvent;
     import flash.system.Security;
     import flash.xml.XMLDocument;
     import flash.xml.XMLNode;
+    import flash.utils.Timer;
     
     public class XMPPConnection extends XMPPSocketConnection{
         
         protected var _incompleteRawXML : String;
         protected var _pendingIQs : Object;
+        private var _keepAliveTimer:Timer;
             
         public function XMPPConnection(){
             Security.loadPolicyFile('xmlsocket://'
@@ -64,12 +67,14 @@ package com.mintdigital.hemlock.conn {
         override public function disconnect() : void {
             Logger.debug("XMPPConnection::disconnect()");
             super.disconnect();
+            _keepAliveTimer.stop();
             dispatchEvent(new ConnectionEvent(ConnectionEvent.DESTROY));
         }
         
         public function sendRawString( data:* ):void{
             Logger.debug("Sending..." + data);
             sendXML(data);
+            resetKeepAliveTimer();
         }
         
         public function sendOpenStreamTag() : void {
@@ -244,11 +249,28 @@ package com.mintdigital.hemlock.conn {
         //--------------------------------------
         //  Events > Handlers
         //--------------------------------------
+        private function onKeepAliveTimer(evt:Event) : void {
+            Logger.debug("XMPPConnection::onKeepAliveTimer() " );
+            sendKeepAlive();
+            resetKeepAliveTimer();
+        }
+
+        private function resetKeepAliveTimer() : void {
+            if(_keepAliveTimer)
+            {
+                _keepAliveTimer.reset();
+            }else{
+	            _keepAliveTimer = new Timer(300000);
+	            _keepAliveTimer.addEventListener(TimerEvent.TIMER, onKeepAliveTimer);            	            	
+            }
+            _keepAliveTimer.start();
+        }
         
         override protected function socketConnected(ev:Event):void{
         	super.socketConnected(ev);
             Logger.debug("XMPPConnection::onSocketConnected()" );
             dispatchEvent( new ConnectionSuccessEvent() );
+            resetKeepAliveTimer();
         }
 
 		//TODO integrate with super.bSocketReceivedData
