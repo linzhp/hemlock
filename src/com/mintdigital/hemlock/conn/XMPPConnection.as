@@ -289,6 +289,7 @@ package com.mintdigital.hemlock.conn {
                     <text xml:lang='' xmlns='urn:ietf:params:xml:ns:xmpp-streams'>Replaced by new connection</text>
                 </stream:error>
                 */
+                Logger.debug('Received closed stream tag from server: '+rawXML);
                 disconnect();
                 return;
             }
