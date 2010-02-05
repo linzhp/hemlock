@@ -1,7 +1,6 @@
 package com.mintdigital.hemlock.conn {
     import com.mintdigital.hemlock.HemlockEnvironment;
     import com.mintdigital.hemlock.Logger;
-    import com.mintdigital.hemlock.clients.XMPPClient;
     import com.mintdigital.hemlock.data.JID;
     import com.mintdigital.hemlock.data.Message;
     import com.mintdigital.hemlock.data.Presence;
@@ -13,15 +12,17 @@ package com.mintdigital.hemlock.conn {
     import com.mintdigital.hemlock.events.RegistrationEvent;
     import com.mintdigital.hemlock.events.SessionEvent;
     import com.mintdigital.hemlock.events.StreamEvent;
-
+    
+    import org.jivesoftware.xiff.core.XMPPSocketConnection;
     import org.jivesoftware.xiff.data.IQ;
     import org.jivesoftware.xiff.data.XMPPStanza;
     import org.jivesoftware.xiff.events.ConnectionSuccessEvent;
+    import org.jivesoftware.xiff.events.LoginEvent;
+    import org.jivesoftware.xiff.events.IQEvent;
     import org.jivesoftware.xiff.exception.SerializationException;
-    import org.jivesoftware.xiff.util.SocketConn;
     import org.jivesoftware.xiff.util.SocketDataEvent;
-    import org.jivesoftware.xiff.core.XMPPSocketConnection;
-
+    import org.jivesoftware.xiff.util.SocketConn;
+	import org.jivesoftware.xiff.data.IExtension;
     import flash.errors.IOError;
     import flash.events.ProgressEvent;
     import flash.events.Event;
@@ -33,6 +34,7 @@ package com.mintdigital.hemlock.conn {
     import flash.xml.XMLDocument;
     import flash.xml.XMLNode;
     import flash.utils.Timer;
+   
     
     public class XMPPConnection extends XMPPSocketConnection{
         
@@ -159,8 +161,8 @@ package com.mintdigital.hemlock.conn {
             return message;
         }
         
-        //TODO integrate with super
 		override protected function handlePresence( node:XMLNode ):org.jivesoftware.xiff.data.Presence{
+			
             Logger.debug('XMPPConnection::handlePresence() ' + node);
             var presence:Presence = new Presence();
             
@@ -170,7 +172,7 @@ package com.mintdigital.hemlock.conn {
             dispatchEvent(new PresenceEvent(PresenceEvent.UPDATE, {
                 presence: presence
             }));
-            return presence;
+            return super.handlePresence(node);
         }
 
         private function handleChallenge(node:XMLNode) : void {
@@ -192,6 +194,7 @@ package com.mintdigital.hemlock.conn {
         
         private function handleSuccess() : void {
             Logger.debug("XMPPConnection::handleSuccess()");
+            dispatchEvent(new LoginEvent());
             dispatchEvent(new SessionEvent(SessionEvent.CREATE_SUCCESS));
         }
         
@@ -212,8 +215,7 @@ package com.mintdigital.hemlock.conn {
                 node:       node
             }));
         }
-        
-        //TODO integrate with super
+
 		override protected function handleIQ( node:XMLNode ):IQ
         {
             var iq:IQ = new IQ();
@@ -222,7 +224,7 @@ package com.mintdigital.hemlock.conn {
             }
             // handle error
             if( iq.type == IQ.ERROR_TYPE && !_pendingIQs[iq.id] ) {
-                Logger.debug("XMPPConnection::handleIQ() : ERROR, no registered id:" + iq.id );
+                Logger.error("XMPPConnection::handleIQ() : ERROR, no registered id:" + iq.id );//different from supper.handleIQ only in this line
             }
             else {
                 // check if a callback exists for this iq
@@ -238,7 +240,17 @@ package com.mintdigital.hemlock.conn {
                     delete _pendingIQs[iq.id];
                 }
                 else {
-                    Logger.debug("XMPPConnection::handleIQ() : no registered callback for " + iq.id );
+					var exts:Array = iq.getAllExtensions();
+					for (var ns:String in exts) {
+						// Static type casting
+						var ext:IExtension = exts[ns] as IExtension;
+						if (ext != null) {
+							var event:IQEvent = new IQEvent(ext.getNS());
+							event.data = ext;
+							event.iq = iq;
+							dispatchEvent( event );
+						}
+					}
                 }
             }
             return iq;
