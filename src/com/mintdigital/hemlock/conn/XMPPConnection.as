@@ -245,7 +245,7 @@ package com.mintdigital.hemlock.conn {
 						// Static type casting
 						var ext:IExtension = exts[ns] as IExtension;
 						if (ext != null) {
-							Logger.debug("XMPPConnection::handleIQ: dispatching IQEvent "+ext.getNS());
+							Logger.debug("...dispatching IQEvent "+ext.getNS());
 							var event:IQEvent = new IQEvent(ext.getNS());
 							event.data = ext;
 							event.iq = iq;
