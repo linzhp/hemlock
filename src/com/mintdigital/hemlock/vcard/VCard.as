@@ -128,7 +128,7 @@ package com.mintdigital.hemlock.vcard
             iq.callbackScope = vcard;
             iq.addExtension(new VCardExtension());
             Logger.debug("Let's see the con: " + con);
-            con.sendStanza(iq);
+            con.send(iq);
             requestTimer.reset();
             requestTimer.start();
         }
@@ -449,7 +449,7 @@ package com.mintdigital.hemlock.vcard
             }
             
             iq.addExtension(vcardExt);
-            con.sendStanza(iq);
+            con.send(iq);
         }
         
         public function _vCardSent(resultIQ:IQ):void

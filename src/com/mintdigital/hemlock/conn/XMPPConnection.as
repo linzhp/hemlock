@@ -84,7 +84,7 @@ package com.mintdigital.hemlock.conn {
             sendRawString( openStreamTag() );
         }
         
-        public function sendStanza( stanza:XMPPStanza ):void
+        override public function send( stanza:XMPPStanza ):void
         {
             Logger.debug("XMPPConnection::sendStanza()");
             if ( _active ) {
@@ -194,7 +194,6 @@ package com.mintdigital.hemlock.conn {
         
         private function handleSuccess() : void {
             Logger.debug("XMPPConnection::handleSuccess()");
-            dispatchEvent(new LoginEvent());
             dispatchEvent(new SessionEvent(SessionEvent.CREATE_SUCCESS));
         }
         
@@ -240,11 +239,13 @@ package com.mintdigital.hemlock.conn {
                     delete _pendingIQs[iq.id];
                 }
                 else {
+                	Logger.debug("XMPPConnection::handleIQ() : no registered callback for " + iq.id );
 					var exts:Array = iq.getAllExtensions();
 					for (var ns:String in exts) {
 						// Static type casting
 						var ext:IExtension = exts[ns] as IExtension;
 						if (ext != null) {
+							Logger.debug("XMPPConnection::handleIQ: dispatching IQEvent "+ext.getNS());
 							var event:IQEvent = new IQEvent(ext.getNS());
 							event.data = ext;
 							event.iq = iq;

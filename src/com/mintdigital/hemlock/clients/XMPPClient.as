@@ -32,6 +32,7 @@ package com.mintdigital.hemlock.clients{
     import flash.events.IOErrorEvent;
     import flash.utils.ByteArray;
     import flash.xml.XMLNode;
+    import mx.events.CollectionEvent;
     
     import org.jivesoftware.xiff.data.ExtensionClassRegistry;
     import org.jivesoftware.xiff.data.IQ;
@@ -98,7 +99,7 @@ package com.mintdigital.hemlock.clients{
             _connection.addEventListener(StreamEvent.START, onStreamStart);
             
 			_roster = new Roster(_connection);
-			
+			_roster.addEventListener(RosterEvent.ROSTER_LOADED, onRosterLoaded);
 			
             ExtensionClassRegistry.register(BindExtension);
             ExtensionClassRegistry.register(RegisterExtension);
@@ -169,13 +170,13 @@ package com.mintdigital.hemlock.clients{
             mucExtension.maxchars = 0; // Request no history
                 // http://xmpp.org/extensions/xep-0045.html#example-37
             presence.addExtension(mucExtension);
-            _connection.sendStanza(presence);
+            _connection.send(presence);
         }
         
         public function leaveChatRoom(toJID:JID):void {
             Logger.debug("XMPPClient::leaveChatRoom()");
             var presence:Presence = new Presence(toJID, _jid, Presence.UNAVAILABLE_TYPE);
-            _connection.sendStanza(presence);
+            _connection.send(presence);
         }
         
         public function createChatRoom(roomType:String, domain:String, key:String=null):void {
@@ -185,7 +186,7 @@ package com.mintdigital.hemlock.clients{
                 mucExtension:MUCExtension = new MUCExtension();
             mucExtension.maxchars = 0; // Request no history
             presence.addExtension(mucExtension);
-            _connection.sendStanza(presence);
+            _connection.send(presence);
         }
         
         public function updateItem(roomJID:JID, updating:JID, opts:Object=null):void {
@@ -200,7 +201,7 @@ package com.mintdigital.hemlock.clients{
             
             iq.callbackName = "handleItemUpdate";
             iq.callbackScope = this;
-            _connection.sendStanza(iq);
+            _connection.send(iq);
         }
         
         public function configureChatRoom(toJID:JID, configOptions:Object=null):void {
@@ -218,7 +219,7 @@ package com.mintdigital.hemlock.clients{
             configIQ.callbackName = "handleCustomConfigResponse";
             configIQ.callbackScope = this;
 
-            _connection.sendStanza(configIQ);
+            _connection.send(configIQ);
         }
         
         public function discoChatRooms():void {
@@ -228,7 +229,7 @@ package com.mintdigital.hemlock.clients{
             discoIQ.callbackName = "handleRoomDisco";
             discoIQ.callbackScope = this;
             
-            _connection.sendStanza(discoIQ);
+            _connection.send(discoIQ);
         }
         
         public function discoUsers(toJID:JID):void {
@@ -238,7 +239,7 @@ package com.mintdigital.hemlock.clients{
             discoIQ.callbackName = "handleUserDisco";
             discoIQ.callbackScope = this;
             
-            _connection.sendStanza(discoIQ);
+            _connection.send(discoIQ);
         }
         
         public function sendMessage(toJID:JID, messageBody:String) : void {
@@ -247,7 +248,7 @@ package com.mintdigital.hemlock.clients{
                 body: messageBody,
                 type: Message.GROUPCHAT_TYPE
             });
-            _connection.sendStanza(message);
+            _connection.send(message);
         }
         
         public function sendDataMessage(toJID:JID, payloadType:String, payload:*=null):void{
@@ -255,7 +256,7 @@ package com.mintdigital.hemlock.clients{
                 recipient: toJID,
                 type: Message.GROUPCHAT_TYPE
             });
-            _connection.sendStanza(dataMessage);
+            _connection.send(dataMessage);
         }
         
         //TODO - maybe refactor these into 1 method
@@ -264,7 +265,7 @@ package com.mintdigital.hemlock.clients{
                 recipient: toJID,
                 type: Message.CHAT_TYPE
             });
-            _connection.sendStanza(dataMessage);
+            _connection.send(dataMessage);
         }
         
         public function sendDiscoveryRequest(toJID:JID=null):void {
@@ -286,7 +287,7 @@ package com.mintdigital.hemlock.clients{
             var presence:Presence = new Presence(
                 toJID, jid, options.type, options.show, options.status, options.priority
                 );
-            _connection.sendStanza(presence);
+            _connection.send(presence);
         }
         
         public function updatePrivacyList(fromJID:JID, stanzaName:String, action:String, options:Object = null):void{
@@ -303,7 +304,7 @@ package com.mintdigital.hemlock.clients{
             iq.from = fromJID;
             var extension:PrivacyListExtension = new PrivacyListExtension();
             iq.addExtension(extension);
-            _connection.sendStanza(iq);
+            _connection.send(iq);
             */
             
             // Specify privacy list
@@ -312,7 +313,7 @@ package com.mintdigital.hemlock.clients{
             var extension:PrivacyListExtension = new PrivacyListExtension();
             extension.setActiveListName(LIST_NAME);
             iq.addExtension(extension);
-            _connection.sendStanza(iq);
+            _connection.send(iq);
             
             // Edit privacy list
             iq = new IQ(null, IQ.SET_TYPE);
@@ -327,7 +328,7 @@ package com.mintdigital.hemlock.clients{
             iq.addExtension(extension);
             // iq.callbackName = '';
             // iq.callbackScope = this;
-            _connection.sendStanza(iq);
+            _connection.send(iq);
         }
         
         private function uniqueNode(roomType:String=null, key:String=null):String {
@@ -392,7 +393,7 @@ package com.mintdigital.hemlock.clients{
             customConfigureIQ.callbackName =  "handleCustomConfigResponse";
             customConfigureIQ.callbackScope = this;
 
-            _connection.sendStanza(customConfigureIQ);
+            _connection.send(customConfigureIQ);
         }
         
         private function onMessageEvent(evt:MessageEvent):void{
@@ -537,8 +538,8 @@ package com.mintdigital.hemlock.clients{
         }
 		
 		private function onRosterLoaded(e:RosterEvent):void{
-			Logger.debug("XMPPClient::onRosterLoaded(): "+_roster.toString());
-			notifyApp(AppEvent.ROSTER_LOADED, _roster);
+			Logger.debug("XMPPClient::onRosterLoaded(): "+_roster);
+			notifyApp(AppEvent.ROSTER_LOADED, {roster: _roster});
 		}
         
         //--------------------------------------
@@ -594,6 +595,7 @@ package com.mintdigital.hemlock.clients{
         {
             Logger.debug("XMPPClient::handleSessionResponse()");
             _sessionStarted = true;
+            _roster.fetchRoster(); //need to fetch here, because connection no longer dispatches LoginEvent
             
             notifyApp(AppEvent.SESSION_CREATE_SUCCESS, {
                 from: _username,
@@ -624,7 +626,7 @@ package com.mintdigital.hemlock.clients{
             sessionIQ.callbackName = "handleSessionResponse";
             sessionIQ.callbackScope = this;
 
-            _connection.sendStanza(sessionIQ);
+            _connection.send(sessionIQ);
         }
         
         public function handleRoomDisco(packet:IQ):void {
@@ -772,7 +774,7 @@ package com.mintdigital.hemlock.clients{
             bindIQ.callbackName = "handleBindResponse";
             bindIQ.callbackScope = this;
 
-            _connection.sendStanza(bindIQ);
+            _connection.send(bindIQ);
         }
         
         private function handleStreamFeaturesNode(featuresNode:XMLNode):void{

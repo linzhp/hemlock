@@ -33,7 +33,7 @@ package com.mintdigital.hemlock.auth {
 
             _connection.addEventListener(RegistrationEvent.REGISTERING, onRegisterResponse);
             
-            _connection.sendStanza(getRegisterIQ);
+            _connection.send(getRegisterIQ);
         }
 
         
@@ -54,7 +54,7 @@ package com.mintdigital.hemlock.auth {
             
             switch(regRequest.status) {
                 case "registering":
-                    _connection.sendStanza(setRegisterIQ);
+                    _connection.send(setRegisterIQ);
                     break;
                 case "errors":
                     dispatchEvent(new RegistrationEvent(RegistrationEvent.ERRORS));
