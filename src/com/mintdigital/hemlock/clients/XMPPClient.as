@@ -365,7 +365,7 @@ package com.mintdigital.hemlock.clients{
             } else {
                 var roomJID:JID = new JID(e.presence.from.toBareJID() + "/" + username);
 
-                if (_roomJIDs.indexOf(roomJID.toString()) < 0 && e.presence.type != Presence.UNAVAILABLE_TYPE) {
+                if (_roomJIDs.indexOf(roomJID.toString()) < 0 && e.presence.role != null ) {
                     dispatchRoomJoinEvent(e.presence, roomJID);
                 } else if (e.presence.type == Presence.UNAVAILABLE_TYPE && roomJID.eq(e.presence.from)) {
                     dispatchRoomLeaveEvent(e.presence, roomJID);
@@ -595,6 +595,7 @@ package com.mintdigital.hemlock.clients{
         {
             Logger.debug("XMPPClient::handleSessionResponse()");
             _sessionStarted = true;
+            _connection.send(new Presence());
             _roster.fetchRoster(); //need to fetch here, because connection no longer dispatches LoginEvent
             
             notifyApp(AppEvent.SESSION_CREATE_SUCCESS, {
