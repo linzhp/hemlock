@@ -28,22 +28,24 @@ package com.mintdigital.hemlock.clients{
     import com.mintdigital.hemlock.utils.HashUtils;
     import com.mintdigital.hemlock.vcard.VCard;
     
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.utils.ByteArray;
+    import flash.xml.XMLNode;
+    
     import org.jivesoftware.xiff.data.ExtensionClassRegistry;
     import org.jivesoftware.xiff.data.IQ;
     import org.jivesoftware.xiff.data.disco.ItemDiscoExtension;
     import org.jivesoftware.xiff.data.forms.FormExtension;
+    import org.jivesoftware.xiff.data.im.RosterExtension;
     import org.jivesoftware.xiff.data.muc.MUCAdminExtension;
     import org.jivesoftware.xiff.data.muc.MUCExtension;
     import org.jivesoftware.xiff.data.muc.MUCOwnerExtension;
     import org.jivesoftware.xiff.data.muc.MUCUserExtension;
     import org.jivesoftware.xiff.data.session.SessionExtension;
     import org.jivesoftware.xiff.data.vcard.VCardExtension;
-    import org.jivesoftware.xiff.data.XMPPStanza;
-
-    import flash.events.Event;
-    import flash.events.IOErrorEvent;
-    import flash.utils.ByteArray;
-    import flash.xml.XMLNode;
+    import org.jivesoftware.xiff.events.RosterEvent;
+    import org.jivesoftware.xiff.im.Roster;
 
     public class XMPPClient implements IClient{
 
@@ -66,6 +68,7 @@ package com.mintdigital.hemlock.clients{
         private var _auth:SASLAuth;
         private var _vCard:VCard;
         private var _eventStrategies:Array; // of IEventStrategy implementors
+		private var _roster:Roster;
         
         private const SESSION_NODE:String = 'session';
 
@@ -94,6 +97,9 @@ package com.mintdigital.hemlock.clients{
             _connection.addEventListener(StreamEvent.ERROR, onStreamError);
             _connection.addEventListener(StreamEvent.START, onStreamStart);
             
+			_roster = new Roster(_connection);
+			
+			
             ExtensionClassRegistry.register(BindExtension);
             ExtensionClassRegistry.register(RegisterExtension);
             ExtensionClassRegistry.register(VCardExtension);
@@ -104,6 +110,7 @@ package com.mintdigital.hemlock.clients{
             ExtensionClassRegistry.register(MUCAdminExtension);
             ExtensionClassRegistry.register(MUCUserExtension);
             ExtensionClassRegistry.register(MUCOwnerExtension);
+			ExtensionClassRegistry.register(RosterExtension);
         }
         
         public function start() : void {
@@ -528,6 +535,11 @@ package com.mintdigital.hemlock.clients{
         private function onConnectionDestroy(evt : ConnectionEvent) : void {
             notifyApp(AppEvent.CONNECTION_DESTROY);
         }
+		
+		private function onRosterLoaded(e:RosterEvent):void{
+			Logger.debug("XMPPClient::onRosterLoaded(): "+_roster.toString());
+			notifyApp(AppEvent.ROSTER_LOADED, _roster);
+		}
         
         //--------------------------------------
         //  Callbacks

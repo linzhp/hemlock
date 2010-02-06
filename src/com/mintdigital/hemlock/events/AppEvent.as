@@ -10,11 +10,13 @@ package com.mintdigital.hemlock.events{
     
     final public class AppEvent extends HemlockEvent{
         
-        public static const ROOM_USER_JOIN:String           = 'room_userJoin'      // Another user joins the room
-        public static const ROOM_USER_LEAVE:String          = 'room_userLeave'     // Another user leaves the room
-        public static const ROOM_CONFIGURED:String          = 'room_configured'    // The final step of updating a room's configuration.
-        public static const ROOM_JOINED:String              = 'room_joined'        // User has joined a room
-        public static const ROOM_LEAVE:String               = 'room_leave'
+        public static const ROOM_USER_JOIN:String           = 'room_userJoin';      // Another user joins the room
+        public static const ROOM_USER_LEAVE:String          = 'room_userLeave';     // Another user leaves the room
+        public static const ROOM_CONFIGURED:String          = 'room_configured';    // The final step of updating a room's configuration.
+        public static const ROOM_JOINED:String              = 'room_joined';        // User has joined a room
+        public static const ROOM_LEAVE:String               = 'room_leave';
+			
+		public static const ROSTER_LOADED:String			  = 'roster_loaded';
 
         // TODO: Phase these out; use PresenceEvent instead
         public static const PRESENCE_CREATE:String          = 'presence_create';
