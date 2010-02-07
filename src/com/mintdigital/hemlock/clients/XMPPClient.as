@@ -595,8 +595,8 @@ package com.mintdigital.hemlock.clients{
         {
             Logger.debug("XMPPClient::handleSessionResponse()");
             _sessionStarted = true;
-            _connection.send(new Presence());
             _roster.fetchRoster(); //need to fetch here, because connection no longer dispatches LoginEvent
+            _connection.send(new Presence());//notify presence to the server in order to get the presence of others 
             
             notifyApp(AppEvent.SESSION_CREATE_SUCCESS, {
                 from: _username,
