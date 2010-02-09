@@ -523,6 +523,7 @@ package com.mintdigital.hemlock.clients{
             _registration.removeEventListener(RegistrationEvent.COMPLETE, onRegistrationComplete);
             _registration = null;
             _connection.disconnect();
+			_auth.stop();
             _connection.connect();
         }
         
